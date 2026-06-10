@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Supervisor — Aptitud Conductor</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080b12;
+  --surface: #0f1320;
+  --surface2: #161c2e;
+  --border: #1e2740;
+  --green: #00f07a;
+  --yellow: #f5c400;
+  --red: #ff3356;
+  --orange: #ff7b00;
+  --cyan: #00c8ff;
+  --text: #dde4f0;
+  --muted: #556080;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#080b12;color:#dde4f0;font-family:'Barlow',sans-serif;font-size:14px;min-height:100vh;}
+
+/* HEADER */
+.header{
+  background:#0c1020;border-bottom:2px solid #1e2d45;
+  padding:16px 24px;display:flex;align-items:center;gap:14px;
+  position:sticky;top:0;z-index:100;
+}
+.logo{
+  width:40px;height:40px;border-radius:10px;
+  background:linear-gradient(135deg,#0050aa,#00c8ff);
+  display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;
+}
+.header h1{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;letter-spacing:2px;text-transform:uppercase;}
+.header p{font-size:10px;color:#7a90b8;font-family:'Share Tech Mono',monospace;letter-spacing:1px;}
+.header-right{margin-left:auto;display:flex;gap:10px;align-items:center;}
+
+/* BUTTONS */
+.btn{
+  padding:10px 18px;border-radius:9px;border:none;cursor:pointer;
+  font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;transition:all .18s;
+}
+.btn-primary{background:#00c8ff;color:#000;}
+.btn-primary:hover{background:#00b0e0;}
+.btn-success{background:#00f07a;color:#000;}
+.btn-success:hover{background:#00d068;}
+.btn-ghost{background:transparent;color:#7a90b8;border:1px solid #1e2d45;}
+.btn-ghost:hover{background:#111827;}
+.btn-sm{padding:6px 12px;font-size:12px;}
+
+/* MAIN */
+.main{padding:24px;max-width:1200px;margin:0 auto;}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.stat-card{
+  background:#0f1320;border:1px solid #1e2d45;border-radius:14px;
+  padding:18px 20px;
+}
+.stat-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#556080;font-family:'Share Tech Mono',monospace;margin-bottom:8px;}
+.stat-value{font-family:'Barlow Condensed',sans-serif;font-size:34px;font-weight:800;line-height:1;}
+.stat-sub{font-size:11px;color:#556080;margin-top:4px;}
+
+/* FILTERS */
+.filters{
+  background:#0f1320;border:1px solid #1e2d45;border-radius:14px;
+  padding:16px 20px;margin-bottom:20px;
+  display:flex;gap:12px;align-items:center;flex-wrap:wrap;
+}
+.filters label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#7a90b8;font-weight:600;}
+.filters select, .filters input{
+  background:#111827;border:1px solid #1e2d45;border-radius:8px;
+  padding:8px 12px;color:#dde4f0;font-family:'Barlow',sans-serif;font-size:13px;
+  outline:none;transition:border-color .2s;
+}
+.filters select:focus, .filters input:focus{border-color:#00c8ff;}
+.filters select option{background:#111827;}
+
+/* TABLE */
+.table-wrap{
+  background:#0f1320;border:1px solid #1e2d45;border-radius:14px;overflow:hidden;
+}
+.table-header{
+  padding:16px 20px;border-bottom:1px solid #1e2d45;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.table-header h2{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;letter-spacing:2px;color:#00c8ff;}
+.table-count{font-size:11px;color:#556080;font-family:'Share Tech Mono',monospace;}
+
+table{width:100%;border-collapse:collapse;}
+thead th{
+  background:#080b12;padding:12px 16px;text-align:left;
+  font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#556080;
+  font-family:'Share Tech Mono',monospace;font-weight:400;
+  border-bottom:1px solid #1e2d45;
+}
+tbody tr{border-bottom:1px solid #111827;transition:background .15s;cursor:pointer;}
+tbody tr:hover{background:#111827;}
+tbody tr:last-child{border-bottom:none;}
+td{padding:13px 16px;font-size:13px;color:#c8d4e8;}
+td.name{font-weight:600;color:#dde4f0;}
+
+.badge{
+  display:inline-block;padding:3px 10px;border-radius:20px;
+  font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;
+}
+.badge-apto{background:rgba(0,240,122,.15);color:#00f07a;border:1px solid rgba(0,240,122,.3);}
+.badge-precaucion{background:rgba(245,196,0,.15);color:#f5c400;border:1px solid rgba(245,196,0,.3);}
+.badge-no-apto{background:rgba(255,51,86,.15);color:#ff3356;border:1px solid rgba(255,51,86,.3);}
+
+.pct-bar{display:flex;align-items:center;gap:8px;}
+.mini-bar{width:60px;height:4px;background:#1e2d45;border-radius:2px;overflow:hidden;}
+.mini-fill{height:100%;border-radius:2px;}
+
+/* EMPTY / LOADING */
+.state-box{padding:60px 20px;text-align:center;color:#556080;}
+.state-box .icon{font-size:40px;margin-bottom:12px;}
+.state-box p{font-size:14px;}
+
+/* MODAL */
+.modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;
+  align-items:center;justify-content:center;padding:20px;
+}
+.modal-overlay.open{display:flex;}
+.modal{
+  background:#0f1320;border:1px solid #1e2d45;border-radius:16px;
+  width:100%;max-width:560px;max-height:85vh;overflow-y:auto;
+}
+.modal-header{
+  padding:20px 24px;border-bottom:1px solid #1e2d45;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;background:#0f1320;z-index:1;
+}
+.modal-header h3{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;letter-spacing:1px;}
+.modal-close{background:none;border:none;color:#556080;font-size:22px;cursor:pointer;padding:4px;}
+.modal-body{padding:20px 24px;}
+.detail-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #111827;}
+.detail-row:last-child{border-bottom:none;}
+.detail-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#556080;}
+.detail-value{font-size:13px;color:#dde4f0;text-align:right;max-width:60%;}
+
+@media(max-width:768px){
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .filters{flex-direction:column;align-items:flex-start;}
+  table{font-size:12px;}
+  thead th:nth-child(n+5){display:none;}
+  td:nth-child(n+5){display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">🚛</div>
+  <div>
+    <h1>Panel Supervisor</h1>
+    <p>APTITUD CONDUCTOR · EVALUACIONES</p>
+  </div>
+  <div class="header-right">
+    <button class="btn btn-success" onclick="exportExcel()">⬇ Exportar Excel</button>
+    <button class="btn btn-ghost" onclick="loadData()">↻ Actualizar</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- STATS -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Total evaluaciones</div>
+      <div class="stat-value" id="stat-total" style="color:#00c8ff">—</div>
+      <div class="stat-sub">registros en Firebase</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Aptos</div>
+      <div class="stat-value" id="stat-apto" style="color:#00f07a">—</div>
+      <div class="stat-sub" id="stat-apto-pct">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Precaución</div>
+      <div class="stat-value" id="stat-prec" style="color:#f5c400">—</div>
+      <div class="stat-sub" id="stat-prec-pct">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">No aptos</div>
+      <div class="stat-value" id="stat-noapto" style="color:#ff3356">—</div>
+      <div class="stat-sub" id="stat-noapto-pct">—</div>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filters">
+    <div>
+      <label>Veredicto</label><br>
+      <select id="filter-veredicto" onchange="applyFilters()">
+        <option value="">Todos</option>
+        <option value="APTO">Apto</option>
+        <option value="PRECAUCIÓN">Precaución</option>
+        <option value="NO APTO">No apto</option>
+      </select>
+    </div>
+    <div>
+      <label>Buscar nombre</label><br>
+      <input type="text" id="filter-nombre" placeholder="Nombre conductor..." oninput="applyFilters()">
+    </div>
+    <div>
+      <label>CD / Planta</label><br>
+      <input type="text" id="filter-cd" placeholder="CD..." oninput="applyFilters()">
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-wrap">
+    <div class="table-header">
+      <h2>Evaluaciones</h2>
+      <span class="table-count" id="table-count">cargando...</span>
+    </div>
+    <div id="table-container">
+      <div class="state-box">
+        <div class="icon">⏳</div>
+        <p>Cargando evaluaciones...</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL DETALLE -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">Detalle evaluación</h3>
+      <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, getDocs, orderBy, query } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyB7E2JtTdtJ6KY8QRSVgvXh850aRRBEly8",
+  authDomain: "aptitud-conductor.firebaseapp.com",
+  projectId: "aptitud-conductor",
+  storageBucket: "aptitud-conductor.firebasestorage.app",
+  messagingSenderId: "80792887593",
+  appId: "1:80792887593:web:872cba3420af1ee20d1738"
+};
+
+const app = initializeApp(FIREBASE_CONFIG);
+const db = getFirestore(app);
+
+let allData = [];
+let filteredData = [];
+
+window.loadData = async function() {
+  document.getElementById('table-container').innerHTML = `<div class="state-box"><div class="icon">⏳</div><p>Cargando...</p></div>`;
+  try {
+    const q = query(collection(db, 'evaluaciones'), orderBy('timestamp', 'desc'));
+    const snap = await getDocs(q);
+    allData = snap.docs.map(d => ({id: d.id, ...d.data()}));
+    applyFilters();
+    updateStats();
+  } catch(e) {
+    // Try without orderBy if index not ready
+    try {
+      const snap = await getDocs(collection(db, 'evaluaciones'));
+      allData = snap.docs.map(d => ({id: d.id, ...d.data()}));
+      allData.sort((a,b) => (b.timestamp||'') > (a.timestamp||'') ? 1 : -1);
+      applyFilters();
+      updateStats();
+    } catch(e2) {
+      document.getElementById('table-container').innerHTML = `<div class="state-box"><div class="icon">❌</div><p>Error al cargar: ${e2.message}</p></div>`;
+    }
+  }
+}
+
+function updateStats() {
+  const total = allData.length;
+  const apto = allData.filter(d => d.veredicto === 'APTO').length;
+  const prec = allData.filter(d => d.veredicto === 'PRECAUCIÓN').length;
+  const noapto = allData.filter(d => d.veredicto === 'NO APTO').length;
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-apto').textContent = apto;
+  document.getElementById('stat-prec').textContent = prec;
+  document.getElementById('stat-noapto').textContent = noapto;
+  const pct = v => total ? Math.round(v/total*100)+'%' : '—';
+  document.getElementById('stat-apto-pct').textContent = pct(apto) + ' del total';
+  document.getElementById('stat-prec-pct').textContent = pct(prec) + ' del total';
+  document.getElementById('stat-noapto-pct').textContent = pct(noapto) + ' del total';
+}
+
+window.applyFilters = function() {
+  const v = document.getElementById('filter-veredicto').value;
+  const n = document.getElementById('filter-nombre').value.toLowerCase();
+  const c = document.getElementById('filter-cd').value.toLowerCase();
+  filteredData = allData.filter(d => {
+    if(v && d.veredicto !== v) return false;
+    if(n && !(d.nombre||'').toLowerCase().includes(n)) return false;
+    if(c && !(d.cd||'').toLowerCase().includes(c)) return false;
+    return true;
+  });
+  renderTable();
+}
+
+function renderTable() {
+  const count = filteredData.length;
+  document.getElementById('table-count').textContent = count + ' registros';
+  if(count === 0) {
+    document.getElementById('table-container').innerHTML = `<div class="state-box"><div class="icon">🔍</div><p>No hay evaluaciones con esos filtros.</p></div>`;
+    return;
+  }
+  const rows = filteredData.map((d,i) => {
+    const badgeClass = d.veredicto==='APTO'?'apto':d.veredicto==='PRECAUCIÓN'?'precaucion':'no-apto';
+    const col = d.globalPct>=60?'#ff3356':d.globalPct>=30?'#f5c400':'#00f07a';
+    return `<tr onclick="showDetail(${i})">
+      <td class="name">${d.nombre||'—'}</td>
+      <td>${d.vehiculo||'—'}</td>
+      <td>${d.cd||'—'}</td>
+      <td>${d.evaluador||'—'}</td>
+      <td><span class="badge badge-${badgeClass}">${d.veredicto||'—'}</span></td>
+      <td>
+        <div class="pct-bar">
+          <div class="mini-bar"><div class="mini-fill" style="width:${d.globalPct||0}%;background:${col}"></div></div>
+          <span style="color:${col};font-weight:600">${d.globalPct||0}%</span>
+        </div>
+      </td>
+      <td style="color:#556080;font-size:11px">${d.fecha||'—'}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('table-container').innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Conductor</th>
+          <th>Vehículo</th>
+          <th>CD</th>
+          <th>Evaluador</th>
+          <th>Veredicto</th>
+          <th>Índice global</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+window.showDetail = function(i) {
+  const d = filteredData[i];
+  const badgeClass = d.veredicto==='APTO'?'apto':d.veredicto==='PRECAUCIÓN'?'precaucion':'no-apto';
+  document.getElementById('modal-title').innerHTML = `${d.nombre||'Conductor'} · <span class="badge badge-${badgeClass}">${d.veredicto}</span>`;
+  const fields = [
+    ['Fecha', d.fecha],
+    ['Evaluador', d.evaluador],
+    ['Vehículo', d.vehiculo],
+    ['CD / Planta', d.cd],
+    ['Índice global', d.globalPct+'%'],
+    ['Cuestionario', d.cuestionarioPct+'%'],
+    ['Reacción', d.reaccionPct+'% ('+d.reaccionMs+'ms)'],
+    ['Coordinación', d.coordPct+'% ('+d.coordHits+' hits)'],
+    ['Agudeza visual', d.visualPct+'%'],
+    ['Visual diferenciación', d.visualDifPct+'%'],
+    ['Visual rastreo', d.visualRastreoPct+'%'],
+    ['Flags críticos', d.flagsCriticos],
+    ['Flags advertencia', d.flagsAdvertencia],
+  ];
+  document.getElementById('modal-body').innerHTML = fields.map(([l,v])=>`
+    <div class="detail-row">
+      <span class="detail-label">${l}</span>
+      <span class="detail-value">${v||'—'}</span>
+    </div>`).join('');
+  document.getElementById('modal').classList.add('open');
+}
+
+window.closeModal = function(e) {
+  if(e.target.id==='modal') document.getElementById('modal').classList.remove('open');
+}
+
+window.exportExcel = function() {
+  if(!filteredData.length){ alert('No hay datos para exportar.'); return; }
+  const headers = ['Fecha','Nombre','Vehículo','CD','Evaluador','Veredicto','Global%','Cuestionario%','Reacción%','Coordinación%','Visual%','ReacciónMs','CoordHits','VisualDif%','VisualRastreo%','FlagsCríticos','FlagsAdvertencia'];
+  const rows = filteredData.map(d=>[
+    d.fecha, d.nombre, d.vehiculo, d.cd, d.evaluador, d.veredicto,
+    d.globalPct, d.cuestionarioPct, d.reaccionPct, d.coordPct, d.visualPct,
+    d.reaccionMs, d.coordHits, d.visualDifPct, d.visualRastreoPct,
+    d.flagsCriticos, d.flagsAdvertencia
+  ]);
+  const csv = [headers, ...rows].map(r => r.map(v => `"${(v||'').toString().replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'evaluaciones_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click(); URL.revokeObjectURL(url);
+}
+
+// Load on start
+loadData();
+</script>
+</body>
+</html>
